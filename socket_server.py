@@ -16,7 +16,7 @@ class socket_server:
         self.__thread = Thread()
         self.__last_ack_received = 0
         self.__timeout = 1
-        self.__file_size = 2000 #bytes
+        self.__file_size = 3000 #bytes
         self.__payload_size = 147
         self.__payload = 'a'*self.__file_size
 
@@ -62,7 +62,6 @@ class socket_server:
             try:
                 data, address = self.recvfrom()
                 print('confirmado', data.ack)
-                
                 if data.syn == 1:
                     self.confirm_connetion(data, address)
                 else:
@@ -84,13 +83,14 @@ class socket_server:
                         if self.__last_ack[1] == 3:
                             print('ack duplicado', data.ack)
                             self.resendpack()
+                            self.sock.settimeout(min(self.__timeout, 5))
                             self.__window_size = (int)(self.__window_size / 2)
                             continue
             except:
                 print('timeout', min(self.__timeout, 5))
                 self.resendpack()
-                self.__timeout += self.__timeout * 0.20
                 self.__window_size = 1
+                self.__timeout += self.__timeout * 0.20
                 self.sock.settimeout(min(self.__timeout, 5))
                     
     def sendpack(self):

@@ -12,11 +12,10 @@ class socket_client:
 
     def confirm_ack(self, data, server_address):
         self.__buffer[data.seq + len(data.payload)] = len(data.payload)
-        p = self.f()
-        data.ack = p
-        sent = self.sendto(data, server_address)
-        
-        print('ack', data.ack)  
+        p = self.last_contiguous_ack()
+        udp = udp_custom(ack=p)
+        sent = self.sendto(udp, server_address)
+        print('ack', udp.ack)  
 
     def sendto(self, data, address):
         return self.sock.sendto(pickle.dumps(data), address)
@@ -32,7 +31,7 @@ class socket_client:
     def close(self):
         self.sock.close()
 
-    def f(self):
+    def last_contiguous_ack(self):
         j = 1
         k = (0, 0)
         for i in sorted(self.__buffer):

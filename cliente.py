@@ -24,7 +24,7 @@ try:
         print('fin',data.fin)
         while data.fin != 1: 
             data.syn = 0
-            time.sleep(uniform(0.1, 1))   
+            time.sleep(uniform(0.1, 0.5))   
             c += 1
             p = randint(0, 9)
             data, server = sock.recvfrom()
