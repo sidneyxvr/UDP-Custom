@@ -11,15 +11,12 @@ class socket_client:
         self.__buffer = dict()
 
     def confirm_ack(self, data, server_address):
-        #1000 = payload
-        # data.ack = data.seq + 1000#len(data.payload)
-        self.__buffer[data.seq + 1000] = 1000
+        self.__buffer[data.seq + len(data.payload)] = len(data.payload)
         p = self.f()
-        print('f',p)
         data.ack = p
         sent = self.sendto(data, server_address)
         
-        print('send ack', data.ack)  
+        print('ack', data.ack)  
 
     def sendto(self, data, address):
         return self.sock.sendto(pickle.dumps(data), address)
@@ -28,13 +25,16 @@ class socket_client:
         data, server = self.sock.recvfrom(4096)
         return pickle.loads(data), server
 
+    def close_server_connection(self, server_address):
+        udp = udp_custom(fin=1)
+        self.sendto(udp, server_address)
+
     def close(self):
         self.sock.close()
 
     def f(self):
         j = 1
         k = (0, 0)
-        print(sorted(self.__buffer))
         for i in sorted(self.__buffer):
             if j == 1:
                 j += 1
@@ -44,6 +44,4 @@ class socket_client:
                 return k[0]
             k = i, self.__buffer[i]
         return k[0]
-            
-            
             

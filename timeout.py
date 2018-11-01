@@ -1,6 +1,6 @@
 import time
 
-class timeout:
+class Timeout:
     def __init__(self, timeout = 0.0, devRtt = 0.0, estimatedRtt = 0.0, sampleRtt = 0.0):
         self.timeout = 1
         self.devRtt = devRtt
